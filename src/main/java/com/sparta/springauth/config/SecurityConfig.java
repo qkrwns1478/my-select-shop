@@ -1,30 +1,42 @@
 package com.sparta.springauth.config;
 
+import org.springframework.boot.security.autoconfigure.web.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity // Spring Security 지원을 가능하게 함
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
-                );
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        // CSRF 설정
+        http.csrf((csrf) -> csrf.disable());
+
+        http.authorizeHttpRequests((authorizeHttpRequests) ->
+                authorizeHttpRequests
+                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
+                        .requestMatchers("/api/user/**").permitAll() // '/api/user/'로 시작하는 요청 모두 접근 허가
+                        .requestMatchers("/.well-known/appspecific/**").permitAll()
+                        .anyRequest().authenticated() // 그 외 모든 요청 인증처리
+        );
+
+        http.formLogin((formLogin) ->
+                formLogin
+                        // 로그인 View 제공 (GET /api/user/login-page)
+                        .loginPage("/api/user/login-page")
+                        // 로그인 처리 (POST /api/user/login)
+                        .loginProcessingUrl("/api/user/login")
+                        // 로그인 처리 후 성공 시 URL
+                        .defaultSuccessUrl("/", true)
+                        // 로그인 처리 후 실패 시 URL
+                        .failureUrl("/api/user/login-page?error")
+                        .permitAll()
+        );
 
         return http.build();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return new InMemoryUserDetailsManager();
     }
 }
