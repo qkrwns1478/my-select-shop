@@ -1,4 +1,4 @@
-package com.sparta.myselectshop;
+package com.sparta.myselectshop.service;
 
 import com.sparta.myselectshop.dto.ProductMypriceRequestDto;
 import com.sparta.myselectshop.dto.ProductRequestDto;
@@ -8,7 +8,6 @@ import com.sparta.myselectshop.entity.User;
 import com.sparta.myselectshop.repository.FolderRepository;
 import com.sparta.myselectshop.repository.ProductFolderRepository;
 import com.sparta.myselectshop.repository.ProductRepository;
-import com.sparta.myselectshop.service.ProductService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
